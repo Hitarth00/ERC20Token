@@ -62,4 +62,39 @@ contract('Cryptos',function(accounts){
       assert.equal(allowance,100,"stores the allowance for delegated transfer");
     });
   });
+
+  it('handles delegated token transfer', function(){
+    return ERC20.deployed().then(function(instance){
+      tokenInstance = instance; 
+      fromAccount = accounts[2];
+      toAccount = accounts[3];
+      spendingAccount =accounts[4];
+     //Transfer tokens to fromAccount
+     return tokenInstance.transfer(fromAccount,100,{from: accounts[0]});
+    }).then(function(receipt){
+      //Approve spendingAccount to spend 10 token from fromAccount
+      return tokenInstance.approve(spendingAccount,10,{from : fromAccount});
+    }).then(function(receipt){
+      return tokenInstance.transferFrom.call(fromAccount,toAccount,10,{from : spendingAccount});
+    }).then(function(success){
+      assert.equal(success.toString(),"true","Returns true")
+      return tokenInstance.transferFrom(fromAccount,toAccount,10,{from : spendingAccount});
+    }).then(function(receipt){
+      assert.equal(receipt.logs.length,1,'triggers one event');
+      assert.equal(receipt.logs[0].event,'Transfer','should be the Transfer event');
+      assert.equal(receipt.logs[0].args._from,accounts[2],'logs the account of amount transfered from');
+      assert.equal(receipt.logs[0].args._to,accounts[3],'logs the account , amount transfered to');
+      assert.equal(receipt.logs[0].args._value,10,'logs the value of amount transfered');
+      return tokenInstance.balanceOf(toAccount);
+    }).then(function(balance){
+      assert.equal(balance.toNumber(),10, "check balance after transferfrom");
+      return tokenInstance.balanceOf(fromAccount);
+    }).then(function(balance){
+      assert.equal(balance.toNumber(),90,"check balance after transferfrom");
+      return tokenInstance.allowance(fromAccount,spendingAccount);
+    }).then(function(balance){
+      assert.equal(balance.toNumber(),0,"check allowance, must be zero");
+    })
+
+  });
 })
