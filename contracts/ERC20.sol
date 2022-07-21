@@ -42,7 +42,7 @@ contract Cryptos is IERC20Interface{
              balances[msg.sender] -= _value;
         
          emit Transfer(msg.sender,_to,_value);
-         return true; 
+        return true; 
     }
 
    function allowance(address _owner, address _spender) public view returns (uint256 remaining){
