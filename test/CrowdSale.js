@@ -24,34 +24,7 @@ contract('CrowdSale',function(accounts){
       assert.equal(tokenPrice,price,"tokenPrice is equal to price")
     })  
   });
-  // it('buying tokens', function(){
-  //   return ERC20.deployed().then(function(instance){
-  //     tokenInstance = instance;
-  //     return CrowdSale.deployed();
-  //   }).then(function(instance){
-  //      tokenSaleInstance = instance; 
-  //      return tokenInstance.transfer(tokenSaleInstance.address,tokenAvailable,{from : admin});
-  //   }).then(function(receipt){
-  //     assert.equal(receipt.logs.length, 1, 'triggers one event');
-  //     assert.equal(receipt.logs[0].event,'Transfer','should be the transfer event');
-  //     assert.equal(receipt.logs[0].args._from,accounts[0],'logs account transfered from');
-  //     assert.equal(receipt.logs[0].args._to,tokenSaleInstance.address,'logs account transfered to');
-  //     assert.equal(receipt.logs[0].args._value,tokenAvailable,'logs value transfered from');
-  //     return tokenInstance.balanceOf(tokenSaleInstance.address);
-  //   }).then(function(amount){
-  //     assert.equal(amount.toNumber(),tokenAvailable,"Token transfered");
-  //     return tokenSaleInstance.buyTokens(100,{from : buyer, value : 1000*100});
-  //   }).then(function(receipt){
-  //     assert.equal(receipt.logs.length, 1, 'triggers one event');
-  //     assert.equal(receipt.logs[0].event,'Sell','should be the transfer event');
-  //     assert.equal(receipt.logs[0].args._buyer,buyer,'logs account transfered from');
-  //     assert.equal(receipt.logs[0].args._amount,100,'logs account transfered to');
-  //     //assert.equal(receipt.logs[0].args._value,100,'logs value transfered from');
-  //     return tokenInstance.balanceOf(tokenSaleInstance.address);
-  //   }).then(function(amount){
-  //     assert.equal(amount.toNumber(),749900,"Balance check of contract");
-  //   })
-  // });
+
   it('facilitates token buying', function() {
     return ERC20.deployed().then(function(instance) {
       // Grab token instance first
@@ -77,17 +50,42 @@ contract('CrowdSale',function(accounts){
     }).then(function(balance) {
       assert.equal(balance.toNumber(), numberOfTokens);
       return tokenInstance.balanceOf(tokenSaleInstance.address);
+    }).then(function(balance) {
+      assert.equal(balance.toNumber(), tokensAvailable - numberOfTokens);
+      // Try to buy tokens different from the ether value
+      return tokenSaleInstance.buyTokens(numberOfTokens, { from: buyer, value: 1 });
+    }).then(assert.fail).catch(function(error) {
+      assert(error.message.indexOf('revert') >= 0, 'msg.value must equal number of tokens in wei');
+      return tokenSaleInstance.buyTokens(80000000000, { from: buyer, value: numberOfTokens * tokenPrice })
+    }).then(assert.fail).catch(function(error) {
+      assert(error.message.indexOf('revert') >= 0, 'cannot purchase more tokens than available');
+      return tokenInstance.balanceOf(tokenSaleInstance.address);
+    }).then(function(amount){
+      assert.equal(amount,749990,"Buy function working properly");
+    });
+  });
+
+  it('ends token sale', function() {
+    return ERC20.deployed().then(function(instance) {
+      // Grab token instance first
+      tokenInstance = instance;
+      return CrowdSale.deployed();
+    }).then(function(instance) {
+      // Then grab token sale instance
+      tokenSaleInstance = instance;
+      // Try to end sale from account other than the admin
+      return tokenSaleInstance.endSale({ from: buyer });
+    }).then(assert.fail).catch(function(error) {
+      assert(error.message.indexOf('revert' >= 0, 'must be admin to end sale'));
+      // End sale as admin
+      return tokenSaleInstance.endSale({ from: admin });
+    }).then(function(receipt) {
+      return tokenInstance.balanceOf(admin);
+    }).then(function(balance) {
+      assert.equal(balance.toNumber(), 999990, 'returns all unsold dapp tokens to admin');
     })
-    // }).then(function(balance) {
-    //   assert.equal(balance.toNumber(), tokensAvailable - numberOfTokens);
-    //   // Try to buy tokens different from the ether value
-    //   return tokenSaleInstance.buyTokens(numberOfTokens, { from: buyer, value: 1 });
-    // }).then(assert.fail).catch(function(error) {
-    //   assert(error.message.indexOf('revert') >= 0, 'msg.value must equal number of tokens in wei');
-    //   return tokenSaleInstance.buyTokens(800000, { from: buyer, value: numberOfTokens * tokenPrice })
-    // }).then(assert.fail).catch(function(error) {
-    //   assert(error.message.indexOf('revert') >= 0, 'cannot purchase more tokens than available');
-    // });
+    
   });
 
 });
+ 

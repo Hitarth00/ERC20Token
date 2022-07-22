@@ -20,4 +20,11 @@ contract CrowdSale{
       tokensSold += _numberOfTokens ;
       emit Sell(msg.sender, _numberOfTokens);
   }
+  function endSale() public payable{
+    require(msg.sender == admin);
+    tokenContract.transfer(admin, tokenContract.balanceOf(address(this)));
+    tokenPrice = 0;
+    
+    selfdestruct(payable(admin));
+  }
 }
