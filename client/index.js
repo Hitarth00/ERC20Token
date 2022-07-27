@@ -2,6 +2,7 @@ import Web3 from "web3";
 import 'bootstrap/dist/css/bootstrap.css';
 import configurations from "../build/contracts/CrowdSale.json";
 import configurations2 from "../build/contracts/Cryptos.json";
+import { equal } from "assert";
 
 const CONTRACT_ADDRESS1 = configurations.networks['5777'].address;
 const CONTRACT_ABI1 = configurations.abi;
@@ -22,42 +23,45 @@ const tokenSymbolEL = document.getElementById('token-symbol');
 const vkpBalanceEL = document.getElementById('vkp-balance');
 const tokenSoldEL = document.getElementById('tokens-sold');  
 const tokenAvailableEL = document.getElementById('tokens-available');
+const buyTokensEL = document.getElementById('buy-tokens');
+const numberOfTokensEL = document.getElementById('number-of-tokens');
+buyTokensEL.addEventListener('click',async (e)=> {
+  tokensBuyedRequest = numberOfTokensEL.value;
+  console.log("buyTokenscalled : " , tokensBuyedRequest);
+  const currentuser = await window.ethereum.selectedAddress;
+  console.log("Current User : ", currentuser);
+  await contract1.methods(buyTokens).send({
+    from : currentuser
+  });
+  await e.preventDefault();
 
+});
 const main= async() => {  
+  console.log("ERC20 Token Contract Address : ", CONTRACT_ADDRESS2);
+  console.log("CrowdSale Contract Address : ", CONTRACT_ADDRESS1);
   const accounts = await web3.eth.requestAccounts();
   account = accounts[0];
   accountEl.innerHTML = account;
   tokenPrice = await contract1.methods.tokenPrice().call();
-  console.log(tokenPrice);
+  console.log("Token Price : ", tokenPrice,"Wei");
   tokenPriceEL.innerHTML = tokenPrice;
   tokenName = await contract2.methods.name().call();
-  console.log(tokenName);
+  console.log("Token Name : ", tokenName);
   tokenNameEL.innerHTML = tokenName;
   tokenSymbol =await contract2.methods.symbol().call();
-  console.log(tokenSymbol);
+  console.log("Token Symbol : ", tokenSymbol);
+  const currentuser = await window.ethereum.selectedAddress;
+  console.log("Current User : ", currentuser); 
   tokenSymbolEL.innerHTML = tokenSymbol;
   vkpBalance = await contract2.methods.balanceOf(account).call();
-  console.log(vkpBalance);
+  console.log("User Balance : ",vkpBalance);
   vkpBalanceEL.innerHTML = vkpBalance;
   tokensSold = await contract1.methods.tokensSold().call();
-  console.log(tokensSold);
+  console.log("Tokens Sold : ",tokensSold);
   tokenSoldEL.innerHTML = tokensSold;
-  const currentuser = await window.ethereum.selectedAddress;
-  console.log(currentuser); 
-  contractBalance = await contract2.methods.balanceOf(CONTRACT_ADDRESS1).call();
-  
-  if(await currentuser == contract2.methods.founder().call()){
-    
-    if(await contractBalance + tokensSold != 7500000){
-      contract2.methods.transfer(CONTRACT_ADDRESS1, 750000-contractBalance-tokensSold).send({
-          from: account,
-        });
-    }
-  }
-  
-
+  contractBalance = await contract2.methods.balanceOf(CONTRACT_ADDRESS2).call();
   tokenAvailableEL.innerHTML =await contract2.methods.balanceOf(CONTRACT_ADDRESS1).call();
-
-
 };
+
 main();
+
