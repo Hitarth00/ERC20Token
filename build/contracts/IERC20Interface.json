@@ -194,7 +194,7 @@
   "sourceMap": "",
   "deployedSourceMap": "",
   "source": "//SPDX-License-Identifier:MIT\npragma solidity 0.8.15;\n\ninterface IERC20Interface {\n\n    function totalSupply() external view returns(uint);\n    function balanceOf(address _owner) external view returns (uint256 balance);\n    function transfer(address _to, uint256 _value) external returns (bool success);\n    \n    function allowance(address _owner, address _spender) external view returns (uint256 remaining);\n    function approve(address _spender, uint256 _value) external returns (bool success);\n    function transferFrom(address _from, address _to, uint256 _value) external returns (bool success);\n\n\n    event Transfer(address indexed _from, address indexed _to, uint256 _value);\n    event Approval(address indexed _owner, address indexed _spender, uint256 _value);\n}\n",
-  "sourcePath": "/home/viraj/Downloads/Blockchain/Project/token_sale/contracts/Interface.sol",
+  "sourcePath": "/home/viraj/Downloads/Blockchain/Project/Token_Sale/contracts/Interface.sol",
   "ast": {
     "absolutePath": "project:/contracts/Interface.sol",
     "exportedSymbols": {
@@ -1061,7 +1061,7 @@
   },
   "networks": {},
   "schemaVersion": "3.4.7",
-  "updatedAt": "2022-07-26T10:04:39.881Z",
+  "updatedAt": "2022-07-27T05:30:17.355Z",
   "devdoc": {
     "kind": "dev",
     "methods": {},

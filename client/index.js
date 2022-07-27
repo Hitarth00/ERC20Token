@@ -2,7 +2,7 @@ import Web3 from "web3";
 import 'bootstrap/dist/css/bootstrap.css';
 import configurations from "../build/contracts/CrowdSale.json";
 import configurations2 from "../build/contracts/Cryptos.json";
-import { equal } from "assert";
+
 
 const CONTRACT_ADDRESS1 = configurations.networks['5777'].address;
 const CONTRACT_ABI1 = configurations.abi;
@@ -30,8 +30,12 @@ buyTokensEL.addEventListener('click',async (e)=> {
   console.log("buyTokenscalled : " , tokensBuyedRequest);
   const currentuser = await window.ethereum.selectedAddress;
   console.log("Current User : ", currentuser);
-  await contract1.methods(buyTokens).send({
-    from : currentuser
+  await contract1.methods.buyTokens(tokensBuyedRequest).send({
+     from : currentuser,
+     value : tokensBuyedRequest*1000000
+  }).then( function(){
+    alert("Token Successfully bought");
+    console.log('Transaction completed')
   });
   await e.preventDefault();
 
@@ -58,9 +62,11 @@ const main= async() => {
   vkpBalanceEL.innerHTML = vkpBalance;
   tokensSold = await contract1.methods.tokensSold().call();
   console.log("Tokens Sold : ",tokensSold);
-  tokenSoldEL.innerHTML = tokensSold;
-  contractBalance = await contract2.methods.balanceOf(CONTRACT_ADDRESS2).call();
-  tokenAvailableEL.innerHTML =await contract2.methods.balanceOf(CONTRACT_ADDRESS1).call();
+  tokenSoldEL.innerHTML = "Tokens Sold : "+tokensSold;
+  contractBalance = await contract2.methods.balanceOf(CONTRACT_ADDRESS1).call();
+  console.log("Contract Balance : ",contractBalance);
+
+  tokenAvailableEL.innerHTML = "Tokens Available : "+parseInt(contractBalance);
 };
 
 main();
