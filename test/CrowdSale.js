@@ -3,16 +3,16 @@ const CrowdSale = artifacts.require("CrowdSale");
 contract('CrowdSale',function(accounts){
   var tokenSaleInstance;
   var tokenInstance;
-  var buyer = '0x3591C2C22C7E831d49feC94Bd407ED63aa35fCF0';
-  var admin = '0xA1F0242e2F1ea7b940B5BDaf00AC1c4Cc9b753D0';
-  var tokenPrice = 1000;
+  var buyer = '0xfdCC7d5D77A080683127657f4765eE0dFdcA83c3';
+  var admin = '0x78111d6A98C33Ec035A391321F9E0c3bD6116926';
+  var tokenPrice = 1000000;
   var  tokensAvailable  = 750000;
   it('initialize the contract with correct value', function(){
     return CrowdSale.deployed().then(function(instance){
       tokenSaleInstance = instance;
       return tokenSaleInstance.admin();
     }).then(function(admin){
-      assert.equal(admin,0xA1F0242e2F1ea7b940B5BDaf00AC1c4Cc9b753D0,"checks admin");
+      assert.equal(admin,'0x78111d6A98C33Ec035A391321F9E0c3bD6116926',"checks admin");
       return tokenSaleInstance.address;
     }).then(function(address){
       assert.notEqual(address,0x0,'has token addres equal to 0')

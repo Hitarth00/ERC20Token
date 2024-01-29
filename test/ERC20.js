@@ -7,10 +7,10 @@ contract('Cryptos',function(accounts){
       tokenInstance = instance;
       return tokenInstance.name();
     }).then(function(name){
-      assert.equal(name,"Viraj","checks name");
+      assert.equal(name,"Hitarth","checks name");
       return tokenInstance.symbol();
     }).then(function(symbol){
-      assert.equal(symbol,'vkp','checks symbol');
+      assert.equal(symbol,'HAP','checks symbol');
     });
   });
 

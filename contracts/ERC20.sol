@@ -2,8 +2,8 @@
 pragma solidity 0.8.15;
 import "./Interface.sol";
 contract Cryptos is IERC20Interface{
-    string public name = "Viraj";
-    string public symbol = "vkp";
+    string public name = "Hitarth";
+    string public symbol = "HAP";
     uint public decimals = 0;
     uint public override totalSupply;
     address public founder;
